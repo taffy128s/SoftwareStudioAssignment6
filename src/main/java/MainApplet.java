@@ -1,6 +1,7 @@
 package main.java;
 
 import processing.core.PApplet;
+import processing.data.JSONObject;
 
 /**
 * This class is for sketching outcome using Processing
@@ -9,7 +10,9 @@ import processing.core.PApplet;
 @SuppressWarnings("serial")
 public class MainApplet extends PApplet{
 	private String path = "main/resources/";
-	private String file = "starwars-episode-1-interactions.json";
+	private String fileFront = "starwars-episode-";
+	private String fileBack = "-interactions.json";
+	private JSONObject[] datas = new JSONObject[8];
 	
 	private final static int width = 1200, height = 650;
 	
@@ -26,7 +29,10 @@ public class MainApplet extends PApplet{
 	}
 
 	private void loadData(){
-
+		for (int i = 1; i <= 7; i++) {
+			datas[i] = loadJSONObject(path + fileFront + Integer.toString(i) + fileBack);
+			
+		}
 	}
 
 }
