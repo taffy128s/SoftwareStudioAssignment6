@@ -19,7 +19,7 @@ public class Main extends JFrame{
 		MainApplet applet = new MainApplet();
 		applet.init();
 		applet.start();
-		applet.setFocusable(true);
+		applet.setFocusable(true); 
 		
 		JFrame window = new JFrame("Star Wars Network Analysis");
 		window.setContentPane(applet);
