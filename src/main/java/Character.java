@@ -9,6 +9,8 @@ import processing.core.PApplet;
 public class Character {
 	
 	private MainApplet parent;
+	private String name;
+	
 
 	public Character(MainApplet parent){
 
