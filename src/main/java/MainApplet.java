@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import controlP5.ControlP5;
+import ddf.minim.AudioPlayer;
+import ddf.minim.Minim;
 import de.looksgood.ani.Ani;
 import processing.core.PApplet;
 import processing.data.JSONArray;
@@ -35,10 +37,16 @@ public class MainApplet extends PApplet{
 	@SuppressWarnings("unused")
 	private Ani ani;
 	private ControlP5 cp5;
+	private Minim minim;
+	private AudioPlayer song;
 	
 	private final static int width = 1150, height = 650;
 	
 	public void setup() {
+		// Set up a song.
+		minim = new Minim(this);
+		song = minim.loadFile(this.getClass().getResource("/main/resources/johncena.mp3").getPath());
+		song.play();
 		size(width, height);
 		smooth();
 		// Load the resources.
