@@ -3,6 +3,7 @@ package main.java;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import controlP5.ControlP5;
 import de.looksgood.ani.Ani;
 import processing.core.PApplet;
 import processing.data.JSONArray;
@@ -23,11 +24,13 @@ public class MainApplet extends PApplet{
 	private JSONArray[] links = new JSONArray[8];
 	private ArrayList<Character> characters = new ArrayList<Character>();
 	private int version = 1;
-	private Character lockWhich, overWhich;
+	private boolean overNode;
+	private Character lockNode, overNodeWhileNotPressed;
 	@SuppressWarnings("unused")
 	private Ani ani;
+	private ControlP5 cp5;
 	
-	private final static int width = 1200, height = 650;
+	private final static int width = 1150, height = 650;
 	
 	public void setup() {
 		size(width, height);
@@ -35,56 +38,99 @@ public class MainApplet extends PApplet{
 		loadData();
 		loadNodeAndLink();
 		Ani.init(this);
+		cp5 = new ControlP5(this);
+		cp5.addButton("button1").setLabel("ADD ALL")
+								.setPosition(875, 50)
+								.setSize(200, 50);
+		cp5.addButton("button2").setLabel("CLEAR")
+								.setPosition(875, 150)
+								.setSize(200, 50);
+	}
+	
+	public void button1() {
+		
+	}
+	
+	public void button2() {
+		
 	}
 
 	public void draw() {
 		// Draw the background.
 		background(255);
+		// Draw the big circle, the strokeWeight will be bigger when dragging in.
+		fill(255);
+		stroke(38, 58, 109);
+		if (lockNode != null && dist(lockNode.x, lockNode.y, 550, 340) < 520 / 2) {
+			strokeWeight(5);
+		} else strokeWeight(1);
+		ellipse(550, 340, 520, 520);
+		// Draw the words.
+		textSize(24);
+		fill(100, 50, 25);
+		text("Star Wars " + String.valueOf(version), 485, 50);
+		// Display the nodes first, then test if the mouse is pointing to any of them.
+		// If the mouse is not pressing and is pointing to one of them, 
+		// then assign the pointer to "overNodeWhileNotPressed".
+		// Else, move back the node.
 		for (Character c : characters) {
-			// Display the nodes first, then test if the mouse is pointing to any of them.
-			// If the mouse is pointing to one of them, assign the pointer to "overWhich",
-			// else move back the node.
 			c.display();
 			if (dist(c.x, c.y, mouseX, mouseY) < Character.DIAMETER / 2 && !mousePressed) {
-				overWhich = c;
+				overNodeWhileNotPressed = c;
 			} else {
 				ani = Ani.to(c, (float) 0.5, "diameter", Character.DIAMETER);
 			}
 		}
+		// "Only" check whether the mouse is pointing to a node.
+		for (Character c : characters) {
+			if (dist(c.x, c.y, mouseX, mouseY) < Character.DIAMETER / 2) {
+				overNode = true;
+				break;
+			} else {
+				overNode = false;
+			}
+		}
 		// If overWhich is not null, make it bigger and draw the label.
-		if (overWhich != null) {
-			if (dist(overWhich.x, overWhich.y, mouseX, mouseY) < Character.DIAMETER / 2) {
-				ani = Ani.to(overWhich, (float) 0.5, "diameter", 50);
+		if (overNodeWhileNotPressed != null) {
+			if (dist(overNodeWhileNotPressed.x, overNodeWhileNotPressed.y, mouseX, mouseY) < Character.DIAMETER / 2) {
+				ani = Ani.to(overNodeWhileNotPressed, (float) 0.5, "diameter", 50);
 				fill(0, 162, 123);
-				rect(mouseX, mouseY -  15, overWhich.getName().length() * 15, 30, 15);
+				rect(mouseX, mouseY -  15, overNodeWhileNotPressed.getName().length() * 15, 30, 15);
 				fill(255);
 				textSize(16);
-				text(overWhich.getName(), mouseX + 10, mouseY + 5);
+				text(overNodeWhileNotPressed.getName(), mouseX + 10, mouseY + 5);
 			}
 		}
 	}
 	
 	public void mousePressed() {
 		// When the mouse is pressed, lock the character which the mouse is pointing to.
-		if (overWhich != null) {
-			lockWhich = overWhich;
+		if (overNode) {
+			lockNode = overNodeWhileNotPressed;
 		}
 	}
 
 	public void mouseDragged() {
 		// The locked character will follow the mouse.
-		if (lockWhich != null) {
-			lockWhich.x = mouseX;
-			lockWhich.y = mouseY;
+		if (lockNode != null) {
+			lockNode.x = mouseX;
+			lockNode.y = mouseY;
 		}
 	}
 	
 	public void mouseReleased() {
-		// TODO: move to the big circle.
-		if (lockWhich != null) {
-			ani = Ani.to(lockWhich, (float) 0.5, "x", lockWhich.getOriginX());
-			ani = Ani.to(lockWhich, (float) 0.5, "y", lockWhich.getOriginY());
+		if (lockNode != null) {
+			if (dist(lockNode.x, lockNode.y, 550, 340) < 520 / 2) {
+				lockNode.setInCircle(true);
+				moveInCircle();
+			} else {
+				lockNode.setInCircle(false);
+				ani = Ani.to(lockNode, (float) 0.5, "x", lockNode.getOriginX());
+				ani = Ani.to(lockNode, (float) 0.5, "y", lockNode.getOriginY());
+				moveInCircle();
+			}
 		}
+		lockNode = null;
 	}
 	
 	public void keyPressed() {
@@ -126,6 +172,20 @@ public class MainApplet extends PApplet{
 			characters.add(c);
 			// The gap between the nodes.
 			y += 55;
+		}
+	}
+	
+	private void moveInCircle() {
+		int counter = 0;
+		float angle = 0;
+		for (Character c : characters)
+			if (c.isInCircle()) counter++;
+		for (Character c : characters) {
+			if (c.isInCircle()) {
+				c.x = 550 + 260 * cos(angle);
+				c.y = 340 - 260 * sin(angle);
+				angle += (TWO_PI / (float) counter);
+			}
 		}
 	}
 }

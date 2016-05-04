@@ -34,6 +34,14 @@ public class Character {
 		}
 	}
 	
+	public void setInCircle(boolean input) {
+		inCircle = input;
+	}
+	
+	public boolean isInCircle() {
+		return inCircle;
+	}
+	
 	public String getName() {
 		return name;
 	}
