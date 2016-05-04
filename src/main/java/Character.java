@@ -1,5 +1,7 @@
 package main.java;
 
+import java.util.ArrayList;
+
 /**
 * This class is used to store states of the characters in the program.
 * You will need to declare other variables depending on your implementation.
@@ -12,6 +14,8 @@ public class Character {
 	private String name;
 	private int color;
 	private boolean inCircle;
+	//MY ADD
+	private ArrayList<Character> targets;
 
 	public Character(MainApplet parent, String name, String color, float x, float y) {
 		this.parent = parent;
@@ -21,6 +25,8 @@ public class Character {
 		this.originY = y;
 		this.x = x;
 		this.y = y;
+		
+		this.targets = new ArrayList<>();
 	}
 
 	public void display() {
@@ -28,7 +34,9 @@ public class Character {
 		parent.noStroke();
 		parent.ellipse(x, y, diameter, diameter);
 		if (inCircle) {
-			
+			/*for(int i = 0; i < targets.size(); ++i){
+				this.parent.line(this.x+4, this.y+4, targets.get(i).x+4, targets.get(i).y+4);
+			}*/
 		} else {
 			
 		}
@@ -52,5 +60,14 @@ public class Character {
 	
 	public float getOriginY() {
 		return originY;
+	}
+	
+	//My add
+	public ArrayList<Character> getTargets(){
+		return this.targets;
+	}
+
+	public void addTarget(Character target) {
+		this.targets.add(target);
 	}
 }

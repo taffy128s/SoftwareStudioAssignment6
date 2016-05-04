@@ -173,6 +173,17 @@ public class MainApplet extends PApplet{
 			// The gap between the nodes.
 			y += 55;
 		}
+		
+		//My add link
+		for(int i = 0; i < links[version].size(); ++i){
+			JSONObject dataLink = links[version].getJSONObject(i);
+			int source = dataLink.getInt("source");
+			int target = dataLink.getInt("target");
+			int value = dataLink.getInt("value");
+			
+			characters.get(source).addTarget(characters.get(target));
+			System.out.println("Source to Target is " + source + "->" + target);
+		}
 	}
 	
 	private void moveInCircle() {
