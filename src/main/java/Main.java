@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 * @version 1.0
 * @since   2016-04-26 
 */
+
 @SuppressWarnings("serial")
 public class Main extends JFrame{
 	

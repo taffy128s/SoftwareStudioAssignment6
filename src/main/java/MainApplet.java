@@ -48,11 +48,18 @@ public class MainApplet extends PApplet{
 	}
 	
 	public void button1() {
-		
+		for (Character c : characters) {
+			c.setInCircle(true);
+		}
+		moveInCircle();
 	}
 	
 	public void button2() {
-		
+		for (Character c : characters) {
+			c.setInCircle(false);
+			ani = Ani.to(c, (float) 1, "x", c.getOriginX());
+			ani = Ani.to(c, (float) 1, "y", c.getOriginY());
+		}
 	}
 
 	public void draw() {
@@ -62,8 +69,8 @@ public class MainApplet extends PApplet{
 		fill(255);
 		stroke(38, 58, 109);
 		if (lockNode != null && dist(lockNode.x, lockNode.y, 550, 340) < 520 / 2) {
-			strokeWeight(5);
-		} else strokeWeight(1);
+			strokeWeight(10);
+		} else strokeWeight(5);
 		ellipse(550, 340, 520, 520);
 		// Draw the words.
 		textSize(24);
@@ -172,6 +179,13 @@ public class MainApplet extends PApplet{
 			characters.add(c);
 			// The gap between the nodes.
 			y += 55;
+		}
+		for (int i = 0; i < links[version].size(); i++) {
+			JSONObject obj = links[version].getJSONObject(i);
+			int source = obj.getInt("source");
+			int target = obj.getInt("target");
+			int weight = obj.getInt("value");
+			characters.get(source).addTarget(characters.get(target), weight);
 		}
 	}
 	
