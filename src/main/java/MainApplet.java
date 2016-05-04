@@ -19,12 +19,18 @@ public class MainApplet extends PApplet{
 	private String path = "main/resources/";
 	private String fileFront = "starwars-episode-";
 	private String fileBack = "-interactions.json";
+	// JSON objects and arrays for 7 episodes.
 	private JSONObject[] datas = new JSONObject[8];
 	private JSONArray[] nodes = new JSONArray[8];
 	private JSONArray[] links = new JSONArray[8];
+	// ArrayList for small balls in current episode.
 	private ArrayList<Character> characters = new ArrayList<Character>();
+	// Show the version number.
 	private int version = 1;
+	// True when the mouse is pointing to a ball.
 	private boolean overNode;
+	// lockNode gives the pointer of the chosen character.
+	// overNodeWhileNotPressed gives the pointer of the pointed character(not pressing).
 	private Character lockNode, overNodeWhileNotPressed;
 	@SuppressWarnings("unused")
 	private Ani ani;
@@ -35,10 +41,12 @@ public class MainApplet extends PApplet{
 	public void setup() {
 		size(width, height);
 		smooth();
+		// Load the resources.
 		loadData();
 		loadNodeAndLink();
 		Ani.init(this);
 		cp5 = new ControlP5(this);
+		// Create two buttons.
 		cp5.addButton("button1").setLabel("ADD ALL")
 								.setPosition(875, 50)
 								.setSize(200, 50);
@@ -48,15 +56,19 @@ public class MainApplet extends PApplet{
 	}
 	
 	public void button1() {
+		// Add all the characters to the big circle.
 		for (Character c : characters) {
 			c.setInCircle(true);
 		}
+		// Move the characters into the big circles.
 		moveInCircle();
 	}
 	
 	public void button2() {
+		// Remove all the characters out.
 		for (Character c : characters) {
 			c.setInCircle(false);
+			// Move all the characters back.
 			ani = Ani.to(c, (float) 1, "x", c.getOriginX());
 			ani = Ani.to(c, (float) 1, "y", c.getOriginY());
 		}
@@ -79,7 +91,7 @@ public class MainApplet extends PApplet{
 		// Display the nodes first, then test if the mouse is pointing to any of them.
 		// If the mouse is not pressing and is pointing to one of them, 
 		// then assign the pointer to "overNodeWhileNotPressed".
-		// Else, move back the node.
+		// Else, resize the node.
 		for (Character c : characters) {
 			c.display();
 			if (dist(c.x, c.y, mouseX, mouseY) < Character.DIAMETER / 2 && !mousePressed) {
@@ -97,7 +109,7 @@ public class MainApplet extends PApplet{
 				overNode = false;
 			}
 		}
-		// If overWhich is not null, make it bigger and draw the label.
+		// If overNodeWhileNotPressed is not null, make it bigger and draw the label.
 		if (overNodeWhileNotPressed != null) {
 			if (dist(overNodeWhileNotPressed.x, overNodeWhileNotPressed.y, mouseX, mouseY) < Character.DIAMETER / 2) {
 				ani = Ani.to(overNodeWhileNotPressed, (float) 0.5, "diameter", 50);
@@ -126,6 +138,10 @@ public class MainApplet extends PApplet{
 	}
 	
 	public void mouseReleased() {
+		// If the lockNode is not null and released in the big circle, set inCircle true.
+		// And then move the characters to the proper positions in the big circle.
+		// Else, set inCircle false, move the lockNode back, 
+		// move the rest of the nodes to the proper positions in the big circle.
 		if (lockNode != null) {
 			if (dist(lockNode.x, lockNode.y, 550, 340) < 520 / 2) {
 				lockNode.setInCircle(true);
@@ -137,6 +153,7 @@ public class MainApplet extends PApplet{
 				moveInCircle();
 			}
 		}
+		// Reset the lockNode.
 		lockNode = null;
 	}
 	
@@ -180,6 +197,7 @@ public class MainApplet extends PApplet{
 			// The gap between the nodes.
 			y += 55;
 		}
+		// Get the links and link weights between the nodes.
 		for (int i = 0; i < links[version].size(); i++) {
 			JSONObject obj = links[version].getJSONObject(i);
 			int source = obj.getInt("source");
@@ -188,12 +206,14 @@ public class MainApplet extends PApplet{
 			characters.get(source).addTarget(characters.get(target), weight);
 		}
 	}
-	
+	// Put the character into the right places.
 	private void moveInCircle() {
 		int counter = 0;
 		float angle = 0;
+		// Check the number of the characters in the big circle.
 		for (Character c : characters)
 			if (c.isInCircle()) counter++;
+		// Use trigonometric functions to determine the positions.
 		for (Character c : characters) {
 			if (c.isInCircle()) {
 				c.x = 550 + 260 * cos(angle);
